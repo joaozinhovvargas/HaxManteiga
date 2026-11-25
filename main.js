@@ -6,12 +6,12 @@ const path = require('path');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
 app.commandLine.appendSwitch('enable-gpu-rasterization');
 app.commandLine.appendSwitch('enable-zero-copy');
-app.commandLine.appendSwitch('disable-gpu-vsync');
-app.commandLine.appendSwitch('disable-frame-rate-limit');
+app.commandLine.appendSwitch('disable-gpu-vsync');        // permite passar de 60
+app.commandLine.appendSwitch('disable-frame-rate-limit'); // o limite de 90 e feito no inject.js
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
 // ---------- Discord Rich Presence (opcional) ----------
-// Cole aqui o Application ID do seu app em discord.com/developers
+// Crie um app em https://discord.com/developers/applications e cole o Application ID aqui.
 const DISCORD_CLIENT_ID = '';
 
 function startDiscord() {
@@ -28,7 +28,7 @@ function startDiscord() {
       });
     });
     rpc.login({ clientId: DISCORD_CLIENT_ID }).catch(() => {});
-  } catch (e) {}
+  } catch (e) { /* sem Discord aberto, ignora */ }
 }
 
 function createWindow() {
@@ -45,8 +45,11 @@ function createWindow() {
     }
   });
 
-  const injectCode = fs.readFileSync(path.join(__dirname, 'inject.js'), 'utf8');
+  const injectCode =
+    fs.readFileSync(path.join(__dirname, 'inject.js'), 'utf8') + '\n;\n' +
+    fs.readFileSync(path.join(__dirname, 'mobile.js'), 'utf8');
 
+  // Injeta o script em todos os frames (pagina principal e iframe do jogo)
   win.webContents.on('did-frame-finish-load', (event, isMainFrame, processId, routingId) => {
     try {
       const frame = webFrameMain.fromId(processId, routingId);

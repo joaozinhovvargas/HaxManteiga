@@ -19,7 +19,7 @@
   "build": {
     "appId": "com.hsa.haxmantega",
     "productName": "HaxMantega",
-    "files": ["main.js", "inject.js", "package.json"],
+    "files": ["main.js", "inject.js", "mobile.js", "package.json"],
     "win": {
       "target": ["nsis", "portable"]
     },

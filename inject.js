@@ -5,6 +5,7 @@
   var TOP = window === window.top;
   var KEY = 'haxmantega_cfg';
 
+  // ---------- Config salva ----------
   var defaults = {
     rainbow: false,
     rainbowMs: 500,
@@ -38,7 +39,7 @@
     };
   })();
 
-  // ---------- Chat ----------
+  // ---------- Ajudantes do chat (dentro da sala) ----------
   function chatInput() { return document.querySelector('[data-hook="input"]'); }
   function sendChat(text) {
     var input = chatInput();
@@ -92,7 +93,7 @@
     }
   }
 
-  // ---------- Painel (F2) ----------
+  // ---------- Painel (F2 abre e fecha) ----------
   var panel = document.createElement('div');
   panel.style.cssText = 'position:fixed;top:10px;right:10px;z-index:2147483647;width:270px;max-height:90vh;overflow:auto;background:rgba(15,20,25,.95);color:#fff;font:13px sans-serif;border:1px solid #3a4a55;border-radius:8px;padding:10px;display:none';
   document.documentElement.appendChild(panel);
@@ -118,6 +119,7 @@
     h.style.cssText = 'font-size:15px;font-weight:bold';
     panel.appendChild(h);
 
+    // Avatar
     panel.appendChild(title('Avatar arco-iris'));
     panel.appendChild(btn(cfg.rainbow ? 'Desligar' : 'Ligar', function () { setRainbow(!cfg.rainbow); render(); }));
     var ms = document.createElement('input');
@@ -130,11 +132,13 @@
     panel.appendChild(ms);
     panel.appendChild(document.createTextNode(' ms'));
 
+    // Temas
     panel.appendChild(title('Tema'));
     Object.keys(themes).forEach(function (t) {
       panel.appendChild(btn(t, function () { cfg.theme = t; save(); applyTheme(); }));
     });
 
+    // Wallpaper
     panel.appendChild(title('Wallpaper (URL da imagem)'));
     var wp = document.createElement('input');
     wp.type = 'text'; wp.value = cfg.wallpaper; wp.placeholder = 'https://...';
@@ -142,11 +146,13 @@
     wp.onchange = function () { cfg.wallpaper = wp.value.trim(); save(); applyTheme(); };
     panel.appendChild(wp);
 
+    // Emojis
     panel.appendChild(title('Emojis (clique para inserir no chat)'));
     ['😀', '😂', '😎', '😡', '😭', '👍', '👏', '🔥', '⚽', '🏆', '💀', '❤️'].forEach(function (e) {
       panel.appendChild(btn(e, function () { insertChat(e); }));
     });
 
+    // Atalhos
     panel.appendChild(title('Atalhos de chat (Alt+1 ... Alt+4)'));
     cfg.shortcuts.forEach(function (s, i) {
       var row = document.createElement('div');
@@ -158,6 +164,7 @@
       panel.appendChild(row);
     });
 
+    // Salas favoritas (so na pagina principal)
     if (TOP) {
       panel.appendChild(title('Salas favoritas'));
       panel.appendChild(btn('⭐ Favoritar sala atual', function () {
