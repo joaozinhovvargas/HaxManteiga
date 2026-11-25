@@ -26,11 +26,14 @@
     var MAX_FPS = 90;
     var interval = 1000 / MAX_FPS;
     var last = 0;
+    var lastRun = -1;
     var realRAF = window.requestAnimationFrame.bind(window);
     window.requestAnimationFrame = function (cb) {
       return realRAF(function tick(ts) {
+        if (ts === lastRun) { cb(ts); return; }
         if (ts - last >= interval - 1) {
           last = ts;
+          lastRun = ts;
           cb(ts);
         } else {
           realRAF(tick);
