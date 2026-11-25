@@ -1,0 +1,66 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/CodeOnTheGoProjects/HaxManteiga/package.json",
+      "selection": {
+        "end": {
+          "column": 1,
+          "index": 737,
+          "line": 30
+        },
+        "start": {
+          "column": 1,
+          "index": 737,
+          "line": 30
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/CodeOnTheGoProjects/HaxManteiga/.gitignore",
+      "selection": {
+        "end": {
+          "column": 5,
+          "index": 19,
+          "line": 1
+        },
+        "start": {
+          "column": 5,
+          "index": 19,
+          "line": 1
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/CodeOnTheGoProjects/HaxManteiga/.github/workflows/build.yml",
+      "selection": {
+        "end": {
+          "column": 27,
+          "index": 774,
+          "line": 38
+        },
+        "start": {
+          "column": 27,
+          "index": 774,
+          "line": 38
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/CodeOnTheGoProjects/HaxManteiga/main.js",
+      "selection": {
+        "end": {
+          "column": 46,
+          "index": 2078,
+          "line": 69
+        },
+        "start": {
+          "column": 46,
+          "index": 2078,
+          "line": 69
+        }
+      }
+    }
+  ],
+  "projectPath": "/storage/emulated/0/CodeOnTheGoProjects/HaxManteiga",
+  "selectedFile": "/storage/emulated/0/CodeOnTheGoProjects/HaxManteiga/main.js"
+}
