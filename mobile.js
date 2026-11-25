@@ -12,11 +12,20 @@
   function save() { try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch (e) {} }
 
   // ---------- Envio de teclas para o jogo ----------
-  var NAMES = { 37: 'ArrowLeft', 38: 'ArrowUp', 39: 'ArrowRight', 40: 'ArrowDown', 88: 'x', 27: 'Escape' };
+  var K = {
+    13: { key: 'Enter', code: 'Enter' },
+    27: { key: 'Escape', code: 'Escape' },
+    37: { key: 'ArrowLeft', code: 'ArrowLeft' },
+    38: { key: 'ArrowUp', code: 'ArrowUp' },
+    39: { key: 'ArrowRight', code: 'ArrowRight' },
+    40: { key: 'ArrowDown', code: 'ArrowDown' },
+    88: { key: 'x', code: 'KeyX' }
+  };
   var down = {};
   function fire(type, code, target) {
+    var k = K[code];
     var e = new KeyboardEvent(type, {
-      key: NAMES[code], code: NAMES[code], keyCode: code, which: code,
+      key: k.key, code: k.code, keyCode: code, which: code,
       bubbles: true, cancelable: true
     });
     if (e.keyCode !== code) {
@@ -33,6 +42,19 @@
   function blurActive() {
     var a = document.activeElement;
     if (a && a.blur && a !== document.body) a.blur();
+  }
+
+  // ---------- Chat ----------
+  function chatInput() { return document.querySelector('[data-hook="input"]'); }
+  function sendChat(text) {
+    var input = chatInput();
+    if (!input) return;
+    input.value = text;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    fire('keydown', 13, input);
+    fire('keyup', 13, input);
+    input.value = '';
+    input.blur();
   }
 
   // ---------- Interface ----------
@@ -109,6 +131,38 @@
   kick.addEventListener('pointerup', kickUp);
   kick.addEventListener('pointercancel', kickUp);
 
+  // Barra de chat rapido (atalhos + emojis), abre no botao 💬
+  var bar = document.createElement('div');
+  bar.style.cssText = 'position:absolute;top:60px;right:8px;max-width:64vw;display:none;flex-wrap:wrap;gap:6px;padding:8px;background:rgba(15,20,25,.93);border:1px solid rgba(255,255,255,.3);border-radius:10px;pointer-events:auto;touch-action:manipulation';
+  root.appendChild(bar);
+
+  function chip(label, fn) {
+    var b = document.createElement('div');
+    b.textContent = label;
+    b.style.cssText = 'padding:10px 14px;background:#2b3a45;color:#fff;border:1px solid #475a68;border-radius:8px;font:15px sans-serif;';
+    b.addEventListener('pointerdown', function (e) { fn(); e.preventDefault(); });
+    bar.appendChild(b);
+  }
+  function buildBar() {
+    bar.innerHTML = '';
+    var list = ['gg', 'boa!', 'passa a bola', 'bora!'];
+    try {
+      var c = JSON.parse(localStorage.getItem('haxmantega_cfg') || '{}');
+      if (c.shortcuts) list = c.shortcuts;
+    } catch (e) {}
+    list.forEach(function (t) {
+      if (t) chip(t, function () { sendChat(t); bar.style.display = 'none'; });
+    });
+    ['😂', '😎', '👍', '🔥', '💀', '⚽'].forEach(function (em) {
+      chip(em, function () { sendChat(em); bar.style.display = 'none'; });
+    });
+    chip('⌨ Digitar', function () {
+      bar.style.display = 'none';
+      var i = chatInput();
+      if (i) i.focus();
+    });
+  }
+
   // Botoes pequenos (topo): chat, menu do jogo, painel HaxMantega
   function small(label, right, fn) {
     var b = document.createElement('div');
@@ -118,13 +172,15 @@
     root.appendChild(b);
   }
   small('💬', 8, function () {
-    var i = document.querySelector('[data-hook="input"]');
-    if (i) i.focus();
+    if (bar.style.display === 'none') { buildBar(); bar.style.display = 'flex'; }
+    else bar.style.display = 'none';
   });
   small('☰', 60, function () {
+    bar.style.display = 'none';
     fire('keydown', 27); fire('keyup', 27);
   });
   small('⚙', 112, function () {
+    bar.style.display = 'none';
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F2', code: 'F2', bubbles: true, cancelable: true }));
   });
 

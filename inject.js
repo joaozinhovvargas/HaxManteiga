@@ -3,6 +3,7 @@
   window.__haxmantega = true;
 
   var TOP = window === window.top;
+  var TOUCH = /Android|iPhone|iPad/i.test(navigator.userAgent);
   var KEY = 'haxmantega_cfg';
 
   // ---------- Config salva ----------
@@ -30,7 +31,7 @@
     var realRAF = window.requestAnimationFrame.bind(window);
     window.requestAnimationFrame = function (cb) {
       return realRAF(function tick(ts) {
-        if (ts === lastRun) { cb(ts); return; }
+        if (ts === lastRun) { cb(ts); return; } // mesmo quadro: deixa todos rodarem
         if (ts - last >= interval - 1) {
           last = ts;
           lastRun = ts;
@@ -98,13 +99,13 @@
 
   // ---------- Painel (F2 abre e fecha) ----------
   var panel = document.createElement('div');
-  panel.style.cssText = 'position:fixed;top:10px;right:10px;z-index:2147483647;width:270px;max-height:90vh;overflow:auto;background:rgba(15,20,25,.95);color:#fff;font:13px sans-serif;border:1px solid #3a4a55;border-radius:8px;padding:10px;display:none';
+  panel.style.cssText = 'position:fixed;top:' + (TOUCH ? '64px' : '10px') + ';right:10px;z-index:2147483647;width:min(300px,92vw);max-height:' + (TOUCH ? 'calc(100vh - 76px)' : '90vh') + ';overflow:auto;-webkit-overflow-scrolling:touch;background:rgba(15,20,25,.95);color:#fff;font:13px sans-serif;border:1px solid #3a4a55;border-radius:8px;padding:10px;display:none';
   document.documentElement.appendChild(panel);
 
   function btn(label, fn) {
     var b = document.createElement('button');
     b.textContent = label;
-    b.style.cssText = 'margin:2px;padding:4px 8px;background:#2b3a45;color:#fff;border:1px solid #475a68;border-radius:4px;cursor:pointer';
+    b.style.cssText = 'margin:2px;padding:' + (TOUCH ? '10px 14px;font-size:15px' : '4px 8px') + ';background:#2b3a45;color:#fff;border:1px solid #475a68;border-radius:4px;cursor:pointer';
     b.onclick = fn;
     return b;
   }
@@ -118,8 +119,11 @@
   function render() {
     panel.innerHTML = '';
     var h = document.createElement('div');
-    h.textContent = 'HaxMantega  (F2 fecha)';
-    h.style.cssText = 'font-size:15px;font-weight:bold';
+    h.style.cssText = 'font-size:15px;font-weight:bold;display:flex;justify-content:space-between;align-items:center';
+    var ht = document.createElement('span');
+    ht.textContent = TOUCH ? 'HaxMantega' : 'HaxMantega  (F2 fecha)';
+    h.appendChild(ht);
+    h.appendChild(btn('✕', function () { panel.style.display = 'none'; }));
     panel.appendChild(h);
 
     // Avatar
@@ -156,14 +160,16 @@
     });
 
     // Atalhos
-    panel.appendChild(title('Atalhos de chat (Alt+1 ... Alt+4)'));
+    panel.appendChild(title(TOUCH ? 'Atalhos de chat (toque em Enviar)' : 'Atalhos de chat (Alt+1 ... Alt+4)'));
     cfg.shortcuts.forEach(function (s, i) {
       var row = document.createElement('div');
       row.appendChild(document.createTextNode('Alt+' + (i + 1) + ': '));
       var inp = document.createElement('input');
-      inp.type = 'text'; inp.value = s; inp.style.width = '170px';
+      inp.type = 'text'; inp.value = s; inp.style.width = TOUCH ? '120px' : '170px';
+      if (TOUCH) inp.style.fontSize = '15px';
       inp.onchange = function () { cfg.shortcuts[i] = inp.value; save(); };
       row.appendChild(inp);
+      row.appendChild(btn('Enviar', function () { sendChat(cfg.shortcuts[i]); }));
       panel.appendChild(row);
     });
 
